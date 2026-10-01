@@ -1,0 +1,38 @@
+{
+	"name": "<TODO>",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"imports": {
+		"#lib/*": "./src/lib/*.ts",
+		"#components/*": "./src/components/*.ts",
+		"#styles/*": "./src/styles/*.ts"
+	},
+	"scripts": {
+		"dev": "bun-server dev src/routes",
+		"build": "bun-server build src/routes",
+		"preview": "bun-server preview",
+		"test": "bun test",
+		"check": "bun run check:type && bun run check:biome",
+		"check:type": "tsc --noEmit",
+		"check:biome": "biome check",
+		"format": "biome check --unsafe --write"
+	},
+	"dependencies": {
+		"@kcstyles/reset.css": "1.0.12",
+		"@kctools/bun-server": "0.3.2",
+		"lit": "3.3.3"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.14",
+		"@happy-dom/global-registrator": "20.14.5",
+		"@kcconfigs/biome": "2.0.6",
+		"@kcconfigs/tsconfig": "1.1.8",
+		"@types/bun": "1.4.2",
+		"typescript-language-server": "6.0.0",
+		"wrangler": "4.135.0"
+	},
+	"peerDependencies": {
+		"typescript": "7.0.2"
+	}
+}
