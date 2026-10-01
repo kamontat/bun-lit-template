@@ -32,6 +32,11 @@ as static assets.
 
 ## Getting started
 
+> [!TIP]
+> Prefer to let an AI agent do it? Copy the prompt in
+> [GET_START.md](GET_START.md); it creates the repository, sets up
+> Cloudflare, and deploys the hello-world page.
+
 1. Create a new repository from this template (**Use this template** on GitHub),
    or clone it directly:
 
