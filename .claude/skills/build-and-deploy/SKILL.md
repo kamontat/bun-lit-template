@@ -112,8 +112,12 @@ injected by script, so it never appears in the HTML).
 ## Debugging a failed deploy
 
 - `gh run view <id> --log-failed` first; quote the decisive line.
-- `Authentication error` / `10000`: token missing **Edit Cloudflare Workers** permission or
-  scoped to another account than `CLOUDFLARE_ACCOUNT_ID`.
+- `Authentication error` / `10000`: the token is an account API token scoped to one Worker
+  with **Editor**. Check it is scoped to the Worker named in `wrangler.jsonc` (a renamed
+  Worker needs a new token), lives in the `CLOUDFLARE_ACCOUNT_ID` account, and has
+  **Workers Routes: Edit** on the zone when a custom domain is set. A Worker-scoped token
+  cannot create a Worker: a new Worker name needs one local `bunx wrangler deploy` under
+  `wrangler login` first.
 - Worker name in the error is `<TODO>`: the template was never customized — see
   `GET_START.md`.
 - Deploy passed but the page is blank: open the browser console. A 404 on a chunk means a

@@ -278,7 +278,11 @@ Set these repository secrets for the deploy workflows:
 | Secret                  | Value                                                                 |
 | ----------------------- | --------------------------------------------------------------------- |
 | `CLOUDFLARE_ACCOUNT_ID` | your Cloudflare account ID                                            |
-| `CLOUDFLARE_API_TOKEN`  | an API token with the **Edit Cloudflare Workers** permission          |
+| `CLOUDFLARE_API_TOKEN`  | an **account** API token scoped to the Worker with **Editor**, plus **Workers Routes: Edit** on the zone if you use a custom domain |
+
+A Worker-scoped token can deploy the Worker but not create it, so create the
+Worker first with one local `bunx wrangler deploy` after `bunx wrangler login`
+(`GET_START.md` does this for you).
 
 And optionally this repository variable (see [Google Tag Manager](#google-tag-manager)):
 

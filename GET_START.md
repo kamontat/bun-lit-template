@@ -163,13 +163,33 @@ Phase 5.
 
    Then run `bunx wrangler whoami` and read the account ID from the output.
    If I have several accounts, ask which one to use. Call it ACCOUNT_ID.
-2. Ask me to create an API token, because Wrangler cannot create one:
-   - Open <https://dash.cloudflare.com/profile/api-tokens>
-   - **Create Token**, use the **Edit Cloudflare Workers** template
-   - Account Resources: the ACCOUNT_ID account. Zone Resources: all zones,
-     or the CUSTOM_DOMAIN zone if one is set
+2. Create the Worker with a first deploy from this machine. The API token in
+   the next step is scoped to this one Worker, and a Worker-scoped token can
+   deploy a Worker but not create it, so the Worker must exist first:
+
+   ```bash
+   CLOUDFLARE_ACCOUNT_ID=ACCOUNT_ID bunx wrangler deploy
+   ```
+
+   This runs `bun run build` and uploads `dist/` using my `wrangler login`
+   session. It also attaches CUSTOM_DOMAIN when one is set. The site is live
+   from here, with Google Tag Manager off; the CI deploy in Phase 7 replaces it.
+   Read the `workers.dev` URL from the output,
+   `https://PROJECT_NAME.SUBDOMAIN.workers.dev`, and call the part before
+   `.workers.dev` SUBDOMAIN. If the output says the account has no
+   `workers.dev` subdomain, ask me to open **Workers & Pages** in the
+   Cloudflare dashboard once to register one, then deploy again.
+3. Ask me to create an **account** API token, which Cloudflare recommends for
+   CI over a user token, because Wrangler cannot create one:
+   - Open <https://dash.cloudflare.com/?to=/:account/api-tokens> (**Manage
+     Account** → **Account API Tokens**) in the ACCOUNT_ID account
+   - **Create Token**, start from the **Edit Cloudflare Workers** template
+   - Scope Workers access to the PROJECT_NAME Worker only, with **Editor**
+     permission
+   - If CUSTOM_DOMAIN is set, add **Workers Routes: Edit** for its zone; every
+     deploy re-applies the custom domain and fails without it
    - Create it and keep the page open for the next step
-3. Store both secrets in the GitHub repository. Set the account ID yourself:
+4. Store both secrets in the GitHub repository. Set the account ID yourself:
 
    ```bash
    gh secret set CLOUDFLARE_ACCOUNT_ID --repo GITHUB_OWNER/REPO_NAME --body "ACCOUNT_ID"
@@ -185,12 +205,7 @@ Phase 5.
    Never ask me to paste the token into the chat, and never write it to a
    file. Confirm both secrets exist with
    `gh secret list --repo GITHUB_OWNER/REPO_NAME`.
-4. Find my workers.dev subdomain (call it SUBDOMAIN, the part before
-   `.workers.dev`). Ask me to open **Workers & Pages** in the Cloudflare
-   dashboard and read it from the overview page (accounts that never opened
-   that page must do so once to register a subdomain). If I prefer, I can
-   tell you the subdomain directly.
-5. Fix the workflow URLs:
+5. Fix the workflow URLs, using SUBDOMAIN from step 2:
    - `deploy-preview.yml`:
      `url: https://pr-${{ github.event.number }}-PROJECT_NAME.SUBDOMAIN.workers.dev`
    - `deploy-production.yml`: `url: https://CUSTOM_DOMAIN` if set, otherwise
@@ -258,7 +273,9 @@ previews never send data.
    ```
 
    The push triggers two workflows: `Main` (check, build, test) and
-   `Deploy Production`. For a repository made with **Use this template**,
+   `Deploy Production`, which redeploys the Worker created in Phase 5 with the
+   API token, this time with Google Tag Manager if `GTM_ID` is set. For a
+   repository made with **Use this template**,
    GitHub already ran both on the template's copied commit, before the
    placeholders were replaced; that failed run is expected, ignore it.
 2. Watch the runs until they finish:
@@ -269,9 +286,11 @@ previews never send data.
    ```
 
    If `Deploy Production` fails, read the log with
-   `gh run view <run-id> --log-failed`, fix the cause (usual suspects: wrong
-   ACCOUNT_ID, token missing a permission, Worker name mismatch), push again,
-   and re-watch. Do not retry blindly.
+   `gh run view <run-id> --log-failed`, fix the cause, push again, and
+   re-watch. Do not retry blindly. Usual suspects: wrong ACCOUNT_ID; the token
+   scoped to a different Worker than the `name` in `wrangler.jsonc`; the token
+   missing **Workers Routes: Edit** for the CUSTOM_DOMAIN zone; or the token
+   created as a user token in another account.
 3. Verify the live site. The page is client-rendered, so check that the HTML
    shell is served with the `<hello-world>` element:
 

@@ -42,6 +42,11 @@ What changed in this project and why, newest first.
   repository or the template, and for a direct clone creates your repository and starts a
   fresh single-commit history.
 - Tests never fetch external scripts: happy-dom reports them as loaded instead.
+- `GET_START.md` creates the Worker with a first local `wrangler deploy`, then has you
+  create an account API token scoped to that one Worker (plus **Workers Routes: Edit** for
+  a custom domain zone), as Cloudflare recommends for CI. The `workers.dev` subdomain is
+  read from that deploy's output instead of the dashboard. Found while setting up a real
+  project from the template.
 
 ### Bug fixes
 
