@@ -76,7 +76,7 @@ placeholder (`grep -rn "<TODO>" --exclude-dir=node_modules .`):
 | `package.json`                            | `name`, the package name                                            |
 | `bun.lock`                                | `name`, kept in sync with `package.json` (or rerun `bun install`)   |
 | `wrangler.jsonc`                          | `name`, the Cloudflare Worker name                                  |
-| `src/routes/index.html`                   | `<title>`, the page title                                           |
+| `src/routes/index.html`                   | `<title>TODO</title>`, the page title (plain `TODO`, not matched by the grep) |
 | `.github/workflows/deploy-preview.yml`    | `environment.url`, `https://pr-<number>-<TODO>.kcinth.workers.dev`  |
 | `.github/workflows/deploy-production.yml` | `environment.url`, `https://<TODO>.kc.in.th`                        |
 
