@@ -25,6 +25,11 @@ and ask me whenever a step needs my input or fails in a way you cannot fix.
 Do not skip verification steps, and report real command output when
 something fails.
 
+The template ships Claude Code skills in `.claude/skills/`. Two of them,
+`shipping-a-change` and `landing-a-change`, require a worktree and pull request
+for every change. They apply to changes made after this setup. This initial setup
+commits directly to `main`, because there is no deployed site to preview yet.
+
 ## Phase 0: Gather inputs
 
 Ask me for these values in one message, and suggest defaults where you can:
@@ -163,6 +168,12 @@ except the two workflow URLs still pending Phase 4.
    ```bash
    gh api -X PUT repos/GITHUB_OWNER/PROJECT_NAME/environments/preview
    gh api -X PUT repos/GITHUB_OWNER/PROJECT_NAME/environments/production
+   ```
+7. Match the repository settings the bundled skills expect (merge commits
+   allowed, head branches deleted after merge):
+
+   ```bash
+   gh repo edit GITHUB_OWNER/PROJECT_NAME --enable-merge-commit --delete-branch-on-merge
    ```
 
 ## Phase 5: Commit, push, and deploy

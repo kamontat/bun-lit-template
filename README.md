@@ -15,6 +15,7 @@ as static assets.
 - [Adding pages](#adding-pages)
 - [Testing](#testing)
 - [Deployment](#deployment)
+- [Agent skills](#agent-skills)
 
 ## Stack
 
@@ -104,6 +105,7 @@ Then delete or replace the sample `hello-world` component and its test.
 ├── tests/
 │   ├── setup-happydom.ts  # registers happy-dom globals for bun test
 │   └── components/        # component tests
+├── .claude/skills/      # Claude Code skills for working in this repo
 ├── .github/workflows/   # CI, preview, and production deploy pipelines
 ├── biome.json           # lint / format config
 ├── bunfig.toml          # bun install + bun test config
@@ -127,16 +129,16 @@ import { sharedStyles } from "#styles/shared"; // ./src/styles/shared.ts
 
 | Command             | Description                                             |
 | ------------------- | ------------------------------------------------------- |
-| `bun run dev`       | Start the dev server with hot reloading                 |
+| `bun run dev`       | Start the dev server with hot reloading on port 3000    |
 | `bun run build`     | Build for production into `dist/`                       |
-| `bun run preview`   | Serve the production build from `dist/`                 |
+| `bun run preview`   | Serve the production build from `dist/` on port 4000    |
 | `bun run test`      | Run tests with `bun test`                               |
 | `bun run typecheck` | Type check with `tsc --noEmit`                          |
 | `bun run check`     | Lint and format check with Biome                        |
 | `bun run format`    | Apply Biome fixes and formatting (including unsafe ones) |
 
 `dev` and `preview` accept `--port` / `--hostname`, for example
-`bun run dev --port 4000`. See the
+`bun run dev --port 3001`. See the
 [`@kctools/bun-server` docs](https://www.npmjs.com/package/@kctools/bun-server)
 for all options, including `--statics` for files no HTML document references
 (favicons, `robots.txt`, images).
@@ -196,15 +198,8 @@ Then load it from a page:
 `src/routes/index.html` is the entrypoint. It links global CSS and component
 scripts with relative paths, and Bun bundles everything it references.
 
-The default scripts run `bun-server` in single page (`spa`) mode, where one
-HTML document answers every request so client-side routers keep working on
-reload. For a multi-page site, switch the `dev` and `build` scripts to `mpa`
-mode, where every `.html` file under `src/routes` becomes its own route:
-
-```json
-"dev": "bun-server dev --mode mpa src/routes",
-"build": "bun-server build --mode mpa src/routes"
-```
+Every `.html` file under `src/routes` becomes its own route, with no script
+change needed:
 
 ```text
 src/routes/index.html        ->  /
@@ -266,3 +261,22 @@ Also create `preview` and `production` environments in the repository settings
 (**Settings → Environments**). Each workflow's `environment.url` is only the
 link GitHub shows on the deployment, so it must be updated by hand to match
 your Worker (see [Customize the template](#customize-the-template)).
+
+## Agent skills
+
+`.claude/skills/` holds [Claude Code skills](https://docs.claude.com/en/docs/claude-code/skills)
+that teach an agent this repository's workflow and conventions:
+
+| Skill                | Covers                                                                      |
+| -------------------- | --------------------------------------------------------------------------- |
+| `shipping-a-change`  | every change in a worktree, test first, ending in a PR with a preview URL   |
+| `landing-a-change`   | after approval: changelog entry, merge commit, worktree cleanup             |
+| `changelog`          | the `CHANGELOG.md` entry format and which section a change belongs in        |
+| `adding-a-page`      | adding a route under `src/routes/`, what each page must link                 |
+| `ui-components`      | Lit component conventions, shadow DOM styling, events, happy-dom test limits |
+| `build-and-deploy`   | the build, `--statics`, `wrangler.jsonc`, workflows, pinned action SHAs      |
+| `repo-scripts`       | package scripts, what `check` reads, TypeScript and Biome strictness         |
+
+`shipping-a-change` and `landing-a-change` assume merge commits are allowed and
+head branches are deleted after merge (`gh repo edit --enable-merge-commit
+--delete-branch-on-merge`).

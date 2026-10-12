@@ -32,6 +32,9 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .superpowers
 .playwright-mcp/
 
+# agent scratch space
+.claude/worktrees
+
 # IntelliJ based IDEs
 .idea
 
