@@ -31,8 +31,9 @@ only `dev`.
 ## Steps
 
 1. Create `src/routes/<slug>.html` (or `src/routes/<slug>/index.html`). Copy the head of
-   `src/routes/index.html`: `charset`, `viewport`, a real `<title>`, the global stylesheet
-   link and one `<script type="module">` per component the page uses.
+   `src/routes/index.html`: `charset`, `viewport`, a real `<title>`, the
+   `<script type="module" src="../lib/gtm.ts">` that loads Google Tag Manager, the global
+   stylesheet link and one `<script type="module">` per component the page uses.
 2. Use **relative** paths for every asset (`../styles/global.css`,
    `../components/foo.ts`). Bun bundles only what a document references, and relative
    links keep `dist/` free of any base-path assumption. A page one directory deeper needs
@@ -50,8 +51,8 @@ only `dev`.
 
 ## What the tests catch
 
-Nothing checks a page's markup. `bun test` renders components in happy-dom; it never
-opens `src/routes/*.html`. A page missing its stylesheet link or a component import
-passes the whole suite — the browser (`bun run dev` or the PR preview URL) is the only
-check. Once a site has several pages, consider a test that reads each `.html` file under
-`src/routes/` and asserts the links it must carry.
+`tests/routes/pages.test.ts` reads every `.html` under `src/routes/` and fails when one
+does not load `lib/gtm.ts`, so a new page cannot silently drop analytics. That is the only
+markup check: a page missing its stylesheet link or a component import still passes the
+whole suite — the browser (`bun run preview` or the PR preview URL) is the only check.
+Extend that test when another line becomes mandatory on every page.
