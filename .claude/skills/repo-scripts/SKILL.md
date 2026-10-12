@@ -18,20 +18,25 @@ stops before Biome runs. `format` is `biome check --unsafe --write` — read the
 since unsafe fixes can change behaviour.
 
 A script that is a *program* (it fetches, generates or migrates something) is a file under
-`scripts/`, run with `bun scripts/<name>.ts` from a package script. Widen `tsconfig.json`'s
-`include` when adding the first one (see below), or it is never typechecked.
+`scripts/`, run with `bun scripts/<name>.ts` from a package script. No page imports it, so
+it never reaches the bundle, and `check:type` covers it without any config change (see
+below).
+
+Where code lives: app code in `src/`, tests in `tests/` mirroring `src/`
+(`src/lib/gtm.ts` → `tests/lib/gtm.test.ts`), programs in `scripts/`.
 
 ## What `check:type` reads
 
-`tsconfig.json` extends `@kcconfigs/tsconfig/bun`, whose `include` is `package.json` and
-`src/**/*.ts` only, with `rootDir` at `src/`. So **`tests/` is not typechecked** — a type
-error in a test passes `bun run check` and only shows in the editor. To cover it, set in
-`tsconfig.json`:
+`tsconfig.json` extends `@kcconfigs/tsconfig/bun`, which (from 2.1.0) includes
+`package.json` and every `.ts`, `.tsx`, `.mts` and `.cts` file under the repository root,
+with `rootDir` at the root and `node_modules/` and `dist/` excluded. So `src/`, `tests/` and
+`scripts/` are all typechecked by `bun run check`, with no `include` to maintain.
 
-```jsonc
-"include": ["package.json", "src/**/*.ts", "tests/**/*.ts"],
-"compilerOptions": { "rootDir": "." /* … */ }
-```
+TypeScript's `**` skips dot-directories, so `.claude/worktrees/*` — full copies of the
+repository — are not typechecked from the main checkout and cannot clash with it. A
+non-dot directory of TypeScript you do not want checked needs an `exclude` in
+`tsconfig.json`; it replaces the preset's list, so repeat `**/node_modules/**` and
+`dist/**` in it.
 
 `experimentalDecorators: true` and `useDefineForClassFields: false` carry a FIXME linking
 oven-sh/bun#43097. Lit's decorators need both under Bun; keep them until the issue closes
