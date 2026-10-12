@@ -10,7 +10,7 @@
 	},
 	"scripts": {
 		"dev": "bun-server dev src/routes",
-		"build": "bun-server build src/routes",
+		"build": "bun-server build --clean src/routes",
 		"preview": "bun-server preview",
 		"test": "bun test",
 		"check": "bun run check:type && bun run check:biome",
@@ -20,7 +20,7 @@
 	},
 	"dependencies": {
 		"@kcstyles/reset.css": "2.0.0",
-		"@kctools/bun-server": "0.4.0",
+		"@kctools/bun-server": "0.4.1",
 		"lit": "3.3.3"
 	},
 	"devDependencies": {

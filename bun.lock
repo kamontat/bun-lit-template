@@ -6,7 +6,7 @@
       "name": "<TODO>",
       "dependencies": {
         "@kcstyles/reset.css": "2.0.0",
-        "@kctools/bun-server": "0.4.0",
+        "@kctools/bun-server": "0.4.1",
         "lit": "3.3.3",
       },
       "devDependencies": {
@@ -180,7 +180,7 @@
 
     "@kcstyles/reset.css": ["@kcstyles/reset.css@2.0.0", "", {}, "sha512-Q0K7gSWmJ2qD5DGqhNSNe8ioAHreUs5l2zefCROXjWjOfM/Td2s9V1vOVI5vqwU10FYAbDz/iGxDHCtlo9OgCw=="],
 
-    "@kctools/bun-server": ["@kctools/bun-server@0.4.0", "", { "dependencies": { "@types/bun": "1.4.2", "commander": "15.0.0", "pino": "10.4.0", "pino-pretty": "13.2.0" }, "bin": { "bun-server": "./bin/index.js" } }, "sha512-NhdwzD98x9/sAn+RXQOEpUAuIgX89mgAGcMAdYU5rDl71Q1PX2ba8CC3AoV6kRJIPm9pCAJn9tQMhbF8nnBUMA=="],
+    "@kctools/bun-server": ["@kctools/bun-server@0.4.1", "", { "dependencies": { "@types/bun": "1.4.2", "commander": "15.0.0", "pino": "10.4.0", "pino-pretty": "13.2.0" }, "bin": { "bun-server": "./bin/index.js" } }, "sha512-3iCXiEgVEzfFEaJCYlMRv+KofqUjlkKU/BMtUe4Gma1Qtx5P3vJ8RxzqIeRwJhO4/q/LbVjlDDH7M6lh8XGa7g=="],
 
     "@kctypes/generic": ["@kctypes/generic@3.0.0", "", { "dependencies": { "typescript": "6.0.3", "vitest": "5.0.3" } }, "sha512-VIdFwxqUhj4ZK5BNM1646CsUb4DHMC4W8iVfAQfQFJohX8wSTt7SxXHW3BxnnQmzFBbYbEjmo5e71mQAhV50yQ=="],
 

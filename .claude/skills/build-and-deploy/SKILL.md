@@ -25,8 +25,10 @@ build with:
 grep -l "dev-mode" dist/*.js   # prints nothing for a production build
 ```
 
-`build` does not clean: `dist/` is never emptied first, so a stale file from an earlier
-build survives. `rm -rf dist` before a build whose output you intend to inspect.
+`build` runs with `--clean`, so `dist/` is emptied first and no stale file or chunk from an
+earlier build survives into a deploy. Keep the flag: without it `bun-server` writes over
+the old output and leaves everything else in place. It refuses to clean a directory that
+is the working directory or one of its parents, so `--out` must stay a subdirectory.
 
 `--statics` ships files no HTML references (favicon, `robots.txt`, images). Each value is
 `<source>[:<target>]`, repeatable, on both `dev` and `build`. The target is a directory
