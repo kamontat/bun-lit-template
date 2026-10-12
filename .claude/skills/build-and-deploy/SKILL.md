@@ -43,7 +43,11 @@ the build.
 `bun-server build` passes `env: "BUN_PUBLIC_*"` to `Bun.build`, so a
 `process.env.BUN_PUBLIC_…` written as property access (never `process.env[name]`) is
 inlined as a string at build time. The dev server inlines nothing and ships no `process`
-shim, so wrap such a read in a `try` and give it a fallback.
+shim, so wrap such a read in a `try` and give it a fallback. Declare each variable on
+`Bun.Env` in `src/types/global.d.ts`, or `noPropertyAccessFromIndexSignature` forces the
+subscript form, which the build does not inline. One exists today: `BUN_PUBLIC_GTM_ID`,
+read by `src/lib/gtm.ts` (see "Google Tag Manager" below). A variable that is unset at build
+time is left as `process.env.…` in the bundle, so the `try` is what keeps it harmless.
 
 `dist/` is what Cloudflare serves — `wrangler.jsonc` names it as `assets.directory` — so
 its shape is part of the deployment contract, not a local convenience.
@@ -88,6 +92,16 @@ is the only readable record of which version the SHA is.
 
 Pushing any change under `.github/workflows/` needs a token with the `workflow` scope:
 `gh auth refresh -h github.com -s workflow`.
+
+## Google Tag Manager
+
+`deploy-production.yml` sets `BUN_PUBLIC_GTM_ID: ${{ vars.GTM_ID }}` on the wrangler step,
+since wrangler runs the build as its own child; `deploy-preview.yml` deliberately does not,
+so previews never send analytics. An unset `GTM_ID` variable arrives as `""`, which
+`loadGtm` rejects, so GTM is simply off. Changing the container means changing the
+variable and re-running `Deploy Production` — the ID is baked into the bundle, not read at
+runtime. To confirm a deploy carries it, grep the page's JS chunks for the ID (GTM is
+injected by script, so it never appears in the HTML).
 
 ## Debugging a failed deploy
 

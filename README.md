@@ -15,6 +15,7 @@ as static assets.
 - [Adding pages](#adding-pages)
 - [Testing](#testing)
 - [Deployment](#deployment)
+- [Google Tag Manager](#google-tag-manager)
 - [Agent skills](#agent-skills)
 
 ## Stack
@@ -34,9 +35,10 @@ as static assets.
 ## Getting started
 
 > [!TIP]
-> Prefer to let an AI agent do it? Copy the prompt in
-> [GET_START.md](GET_START.md); it creates the repository, sets up
-> Cloudflare, and deploys the hello-world page.
+> Prefer to let an AI agent do it? After step 1, open an agent in the
+> repository and give it the prompt in [GET_START.md](GET_START.md). It
+> customizes the project, sets up Cloudflare Workers and (optionally) Google
+> Tag Manager, and deploys the hello-world page.
 
 1. Create a new repository from this template (**Use this template** on GitHub),
    or clone it directly:
@@ -104,7 +106,9 @@ Then delete or replace the sample `hello-world` component and its test.
 │   └── types/           # global type declarations (HTMLElementTagNameMap)
 ├── tests/
 │   ├── setup-happydom.ts  # registers happy-dom globals for bun test
-│   └── components/        # component tests
+│   ├── components/        # component tests
+│   ├── lib/               # tests for src/lib (gtm.ts)
+│   └── routes/            # checks every page in src/routes
 ├── .claude/skills/      # Claude Code skills for working in this repo
 ├── .github/workflows/   # CI, preview, and production deploy pipelines
 ├── biome.json           # lint / format config
@@ -207,6 +211,13 @@ src/routes/about.html        ->  /about
 src/routes/blog/post.html    ->  /blog/post
 ```
 
+Every page must load Google Tag Manager in its `<head>`, with the path
+adjusted to its depth (`tests/routes/pages.test.ts` fails otherwise):
+
+```html
+<script type="module" src="../lib/gtm.ts"></script>
+```
+
 ## Testing
 
 Tests run with `bun test`. `bunfig.toml` preloads `tests/setup-happydom.ts`,
@@ -261,6 +272,32 @@ Also create `preview` and `production` environments in the repository settings
 (**Settings → Environments**). Each workflow's `environment.url` is only the
 link GitHub shows on the deployment, so it must be updated by hand to match
 your Worker (see [Customize the template](#customize-the-template)).
+
+## Google Tag Manager
+
+`src/lib/gtm.ts` loads a Google Tag Manager container on every page. It reads
+the container ID from `BUN_PUBLIC_GTM_ID`, which `bun-server build` inlines at
+build time, and does nothing when the ID is missing or not shaped like
+`GTM-XXXXXXX`. So GTM is off in `bun run dev`, in tests and in local builds.
+
+Only `deploy-production.yml` passes the ID, from the `GTM_ID` repository
+variable, so pull request previews never send data:
+
+```bash
+gh variable set GTM_ID --body "GTM-XXXXXXX"
+```
+
+Publish the container in Tag Manager at least once before deploying; an
+unpublished container serves no `gtm.js`. To try it locally, build with the
+variable and preview:
+
+```bash
+BUN_PUBLIC_GTM_ID=GTM-XXXXXXX bun run build && bun run preview
+```
+
+The module script is deferred, so GTM starts after the HTML is parsed rather
+than at the top of `<head>` as in Google's snippet, and there is no
+`<noscript>` fallback, since that needs the ID in the HTML.
 
 ## Agent skills
 
