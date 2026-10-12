@@ -68,6 +68,10 @@ trailing comment:
 - `deploy-production.yml` — pushes to `main`: `wrangler deploy`, reporting into the
   `production` environment.
 
+Both deploy jobs carry `if: ${{ !github.event.repository.is_template }}`: the template
+repository has no Worker of its own, so it skips them, while a repository created from it
+is not a template and deploys. Keep the guard on any new deploy job.
+
 Each workflow's `environment.url` is only the link GitHub shows on the deployment; wrangler
 does not read it. It is built by hand because the action's `deployment-url` output knows
 neither preview aliases nor custom domains, so it must be edited whenever the Worker name,

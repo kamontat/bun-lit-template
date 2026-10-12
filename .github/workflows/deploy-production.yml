@@ -12,6 +12,8 @@ concurrency:
 
 jobs:
   deploy:
+    ## NOTE: The template repository itself has no Worker to deploy; repositories created from it are not templates
+    if: ${{ !github.event.repository.is_template }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:

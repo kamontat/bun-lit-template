@@ -121,7 +121,7 @@ Replace them as follows:
 | `package.json` | `"name": "<TODO>"` to `"name": "PROJECT_NAME"` |
 | `bun.lock` | `"name": "<TODO>"` to `"name": "PROJECT_NAME"` |
 | `wrangler.jsonc` | `"name": "<TODO>"` to `"name": "PROJECT_NAME"` |
-| `src/routes/index.html` | `<title>TODO</title>` to `<title>PAGE_TITLE</title>` (plain `TODO`, so the grep above does not list it) |
+| `src/routes/index.html` | `<title>TODO</title>` to `<title>PAGE_TITLE</title>` (plain `TODO`, because Biome cannot parse a tag-like `<TODO>` inside `<title>`, so the grep above does not list it) |
 | `.github/workflows/deploy-preview.yml` | `environment.url`: fix in Phase 5 once the workers.dev subdomain is known |
 | `.github/workflows/deploy-production.yml` | `environment.url`: fix in Phase 5 |
 
