@@ -2,7 +2,7 @@
 
 What changed in this project and why, newest first.
 
-## 2026-10-12: Agent skills and a green template CI, and Google Tag Manager
+## 2026-10-12: Agent skills and a green template CI, Google Tag Manager, and clean, fully typechecked builds
 
 ### BREAKING CHANGES
 
@@ -26,8 +26,16 @@ What changed in this project and why, newest first.
 
 ### Improvements
 
-- `@kctools/bun-server` is upgraded to 0.4.0, alongside `@kcstyles/reset.css` 2.0.0,
-  `@kcconfigs/biome` 3.0.0, `@kcconfigs/tsconfig` 2.0.0, happy-dom 21 and wrangler 4.149.0.
+- `@kctools/bun-server` is upgraded to 0.4.2, alongside `@kcstyles/reset.css` 2.0.0,
+  `@kcconfigs/biome` 3.0.0, `@kcconfigs/tsconfig` 2.1.0, happy-dom 21 and wrangler 4.149.0.
+- `bun run build` empties `dist/` first (`--clean`, new in bun-server 0.4.1), so no stale
+  file or chunk from an earlier build reaches a deploy.
+- `bun run check` typechecks every TypeScript file, not only `src/`: the `bun` preset of
+  `@kcconfigs/tsconfig` 2.1.0 includes the whole repository, so `tests/` and future
+  `scripts/` are covered with no `include` to maintain.
+- The README matches the project again: the real scripts (`check` is `check:type` plus
+  `check:biome`), where code lives (`src/`, `tests/`, `scripts/`), the template deploy skip,
+  the `GTM_ID` variable, and the routing difference between `dev` and `preview`.
 - `GET_START.md` enables merge commits and head-branch deletion on the new repository,
   which `landing-a-change` relies on.
 - `GET_START.md` follows the clone-then-ask flow: it detects whether `origin` is your own
