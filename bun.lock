@@ -6,14 +6,14 @@
       "name": "<TODO>",
       "dependencies": {
         "@kcstyles/reset.css": "2.0.0",
-        "@kctools/bun-server": "0.4.0",
+        "@kctools/bun-server": "0.4.2",
         "lit": "3.3.3",
       },
       "devDependencies": {
         "@biomejs/biome": "2.5.15",
         "@happy-dom/global-registrator": "21.0.1",
         "@kcconfigs/biome": "3.0.0",
-        "@kcconfigs/tsconfig": "2.0.0",
+        "@kcconfigs/tsconfig": "2.1.0",
         "@types/bun": "1.4.2",
         "typescript-language-server": "6.0.2",
         "wrangler": "4.149.0",
@@ -176,11 +176,11 @@
 
     "@kcconfigs/biome": ["@kcconfigs/biome@3.0.0", "", { "peerDependencies": { "@biomejs/biome": "^2.0.0" } }, "sha512-pVgyJxNMWarfPegh7kz0nU4D09pBb+oIR+O5apyj0zfSuG1Vew9PtHIIab05++cAxHpttVUZs95g+iTIy/kkuw=="],
 
-    "@kcconfigs/tsconfig": ["@kcconfigs/tsconfig@2.0.0", "", { "dependencies": { "@kctypes/generic": "3.0.0", "@types/bun": "^1.4.2", "@types/node": "^24.19.0" }, "peerDependencies": { "typescript": "^6.0.0" } }, "sha512-NDH7sXnTwPL7gCFERoJk3AC4Y83COo7IlA/pSHc6w1fGbK0dCiTNb6hDxlgaiS4dI45iI8qG5JPZ9Lo7tkaZVA=="],
+    "@kcconfigs/tsconfig": ["@kcconfigs/tsconfig@2.1.0", "", { "dependencies": { "@kctypes/generic": "3.0.0", "@types/bun": "^1.4.2", "@types/node": "^24.19.0" }, "peerDependencies": { "typescript": "^6.0.0" } }, "sha512-/1R5VpfeNETqTgy4Xf8RQAsF/XznKJ5p8jD+T/TcyA72/PE7xab/Tby8zTJ6hIQE4OyfTFmMlBPqRCHgogHKqQ=="],
 
     "@kcstyles/reset.css": ["@kcstyles/reset.css@2.0.0", "", {}, "sha512-Q0K7gSWmJ2qD5DGqhNSNe8ioAHreUs5l2zefCROXjWjOfM/Td2s9V1vOVI5vqwU10FYAbDz/iGxDHCtlo9OgCw=="],
 
-    "@kctools/bun-server": ["@kctools/bun-server@0.4.0", "", { "dependencies": { "@types/bun": "1.4.2", "commander": "15.0.0", "pino": "10.4.0", "pino-pretty": "13.2.0" }, "bin": { "bun-server": "./bin/index.js" } }, "sha512-NhdwzD98x9/sAn+RXQOEpUAuIgX89mgAGcMAdYU5rDl71Q1PX2ba8CC3AoV6kRJIPm9pCAJn9tQMhbF8nnBUMA=="],
+    "@kctools/bun-server": ["@kctools/bun-server@0.4.2", "", { "dependencies": { "@types/bun": "1.4.2", "commander": "15.0.0", "pino": "10.4.0", "pino-pretty": "13.2.0" }, "bin": { "bun-server": "./bin/index.js" } }, "sha512-fElwludPVC27d1yU5TXV7/eB4y5gob8+OhWcm0b7TxD/r4izLappNB3ec9J9K7xlf95bmYpTSviwanAIdx6Spg=="],
 
     "@kctypes/generic": ["@kctypes/generic@3.0.0", "", { "dependencies": { "typescript": "6.0.3", "vitest": "5.0.3" } }, "sha512-VIdFwxqUhj4ZK5BNM1646CsUb4DHMC4W8iVfAQfQFJohX8wSTt7SxXHW3BxnnQmzFBbYbEjmo5e71mQAhV50yQ=="],
 

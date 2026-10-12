@@ -44,7 +44,7 @@ as static assets.
    or clone it directly:
 
    ```bash
-   git clone <this-repo-url> my-app
+   git clone https://github.com/kamontat/bun-lit-template.git my-app
    cd my-app
    ```
 
@@ -98,23 +98,23 @@ Then delete or replace the sample `hello-world` component and its test.
 
 ```text
 .
-├── src/
+├── src/                 # application code
 │   ├── routes/          # HTML entrypoints (index.html is the app shell)
 │   ├── components/      # Lit components        (import as #components/*)
-│   ├── lib/             # shared TypeScript     (import as #lib/*)
+│   ├── lib/             # shared TypeScript     (import as #lib/*), e.g. gtm.ts
 │   ├── styles/          # global CSS and shared Lit styles (#styles/*)
-│   └── types/           # global type declarations (HTMLElementTagNameMap)
-├── tests/
-│   ├── setup-happydom.ts  # registers happy-dom globals for bun test
-│   ├── components/        # component tests
-│   ├── lib/               # tests for src/lib (gtm.ts)
-│   └── routes/            # checks every page in src/routes
+│   └── types/           # global type declarations (HTMLElementTagNameMap, Bun.Env)
+├── tests/               # tests, mirroring src/ (src/lib/gtm.ts -> tests/lib/gtm.test.ts)
+│   └── setup-happydom.ts  # registers happy-dom globals for bun test
+├── scripts/             # standalone programs run by package scripts (none yet)
 ├── .claude/skills/      # Claude Code skills for working in this repo
 ├── .github/workflows/   # CI, preview, and production deploy pipelines
+├── CHANGELOG.md         # what changed and why, newest first
+├── GET_START.md         # setup prompt for an AI agent
 ├── biome.json           # lint / format config
 ├── bunfig.toml          # bun install + bun test config
 ├── mise.toml            # pinned tool versions
-├── tsconfig.json        # TypeScript config
+├── tsconfig.json        # TypeScript config (checks every .ts file)
 └── wrangler.jsonc       # Cloudflare Workers config
 ```
 
@@ -131,18 +131,21 @@ import { sharedStyles } from "#styles/shared"; // ./src/styles/shared.ts
 
 ## Scripts
 
-| Command             | Description                                             |
-| ------------------- | ------------------------------------------------------- |
-| `bun run dev`       | Start the dev server with hot reloading on port 3000    |
-| `bun run build`     | Build for production into `dist/`                       |
-| `bun run preview`   | Serve the production build from `dist/` on port 4000    |
-| `bun run test`      | Run tests with `bun test`                               |
-| `bun run typecheck` | Type check with `tsc --noEmit`                          |
-| `bun run check`     | Lint and format check with Biome                        |
-| `bun run format`    | Apply Biome fixes and formatting (including unsafe ones) |
+| Command               | Description                                              |
+| --------------------- | -------------------------------------------------------- |
+| `bun run dev`         | Start the dev server with hot reloading on port 3000     |
+| `bun run build`       | Empty `dist/`, then build for production into it         |
+| `bun run preview`     | Serve the production build from `dist/` on port 4000     |
+| `bun run test`        | Run tests with `bun test`                                |
+| `bun run check`       | `check:type` then `check:biome`                          |
+| `bun run check:type`  | Type check every `.ts` file with `tsc --noEmit`          |
+| `bun run check:biome` | Lint and format check with Biome, without changing files |
+| `bun run format`      | Apply Biome fixes and formatting (including unsafe ones) |
 
 `dev` and `preview` accept `--port` / `--hostname`, for example
-`bun run dev --port 3001`. See the
+`bun run dev --port 3001`, and move to the next free port when theirs is busy.
+`dev` answers every unknown path with `index.html`, while `preview` and
+Cloudflare return 404, so check new links with `bun run build && bun run preview`. See the
 [`@kctools/bun-server` docs](https://www.npmjs.com/package/@kctools/bun-server)
 for all options, including `--statics` for files no HTML document references
 (favicons, `robots.txt`, images).
@@ -220,9 +223,11 @@ adjusted to its depth (`tests/routes/pages.test.ts` fails otherwise):
 
 ## Testing
 
-Tests run with `bun test`. `bunfig.toml` preloads `tests/setup-happydom.ts`,
-which registers a happy-dom `window` and `document`, so components render
-without a browser:
+Tests run with `bun test` and live in `tests/`, mirroring `src/`
+(`tests/components/hello-world.test.ts`); `bun run check` typechecks them too.
+`bunfig.toml` preloads `tests/setup-happydom.ts`, which registers a happy-dom
+`window` and `document`, so components render without a browser, and reports
+external scripts as loaded instead of fetching them:
 
 ```ts
 import { afterEach, expect, test } from "bun:test";
@@ -248,6 +253,9 @@ The site deploys to Cloudflare Workers as static assets. `wrangler.jsonc` runs
 
 ### Manual deploy
 
+A manual deploy builds without `BUN_PUBLIC_GTM_ID`, so it ships with Google Tag
+Manager off unless you set the variable in your shell first.
+
 ```bash
 bunx wrangler login
 bunx wrangler deploy
@@ -257,9 +265,13 @@ bunx wrangler deploy
 
 | Workflow                  | Trigger            | Does                                                                  |
 | ------------------------- | ------------------ | --------------------------------------------------------------------- |
-| `main.yml`                | every push         | `check`, `test`, `build`                                              |
+| `main.yml`                | every push         | `check`, `build`, `test`                                              |
 | `deploy-preview.yml`      | pull requests      | uploads a preview version aliased `pr-<number>`                       |
-| `deploy-production.yml`   | push to `main`     | deploys to production                                                 |
+| `deploy-production.yml`   | push to `main`     | deploys to production, with `BUN_PUBLIC_GTM_ID` from `vars.GTM_ID`    |
+
+Both deploy jobs skip in a template repository
+(`github.event.repository.is_template`), so this template never tries to deploy
+itself while repositories created from it do.
 
 Set these repository secrets for the deploy workflows:
 
@@ -267,6 +279,12 @@ Set these repository secrets for the deploy workflows:
 | ----------------------- | --------------------------------------------------------------------- |
 | `CLOUDFLARE_ACCOUNT_ID` | your Cloudflare account ID                                            |
 | `CLOUDFLARE_API_TOKEN`  | an API token with the **Edit Cloudflare Workers** permission          |
+
+And optionally this repository variable (see [Google Tag Manager](#google-tag-manager)):
+
+| Variable | Value                                                                             |
+| -------- | --------------------------------------------------------------------------------- |
+| `GTM_ID` | your Google Tag Manager container ID (`GTM-XXXXXXX`); leave unset to keep GTM off |
 
 Also create `preview` and `production` environments in the repository settings
 (**Settings → Environments**). Each workflow's `environment.url` is only the

@@ -81,7 +81,8 @@ bubbles: true, composed: true })`), or the page hears a stale echo of the inner 
 ## Testing
 
 Tests live in `tests/`, mirroring `src/`. `bunfig.toml` preloads `tests/setup-happydom.ts`,
-which registers happy-dom's `window` and `document`.
+which registers happy-dom's `window` and `document` and treats external script loads as
+successful, so no test fetches the network.
 
 - Create the element, append it to `document.body`, then `await el.updateComplete` before
   every assertion — Lit renders in a microtask, not synchronously. Reach inside through
@@ -96,5 +97,3 @@ which registers happy-dom's `window` and `document`.
 - happy-dom does not replay an attribute already present when an element upgrades. Markup
   set with `innerHTML` *before* the component module is imported loses its attributes;
   import the component first, or set properties directly in the test.
-- `tests/` is not typechecked by `bun run check` (see the `repo-scripts` skill), so a type
-  error there only shows in the editor.
